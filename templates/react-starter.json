@@ -1,0 +1,12 @@
+{
+  "id": "react-starter",
+  "name": "React Starter",
+  "description": "Basic React application template",
+  "framework": "react",
+  "category": "starter",
+  "files": {
+    "index.html": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>React App</title>\n  <script src=\"https://unpkg.com/react@18/umd/react.development.js\"></script>\n  <script src=\"https://unpkg.com/react-dom@18/umd/react-dom.development.js\"></script>\n  <script src=\"https://unpkg.com/@babel/standalone/babel.min.js\"></script>\n</head>\n<body>\n  <div id=\"root\"></div>\n  <script type=\"text/babel\" src=\"script.js\"></script>\n</body>\n</html>",
+    "script.js": "const { useState } = React;\n\nfunction App() {\n  const [count, setCount] = useState(0);\n\n  return (\n    <div style={{ padding: '20px', textAlign: 'center' }}>\n      <h1>Hello React!</h1>\n      <p>Count: {count}</p>\n      <button onClick={() => setCount(count + 1)}>\n        Increment\n      </button>\n    </div>\n  );\n}\n\nReactDOM.render(<App />, document.getElementById('root'));",
+    "style.css": "body {\n  font-family: Arial, sans-serif;\n  margin: 0;\n  padding: 0;\n  background-color: #f0f0f0;\n}\n\nbutton {\n  background-color: #007bff;\n  color: white;\n  border: none;\n  padding: 10px 20px;\n  border-radius: 5px;\n  cursor: pointer;\n}\n\nbutton:hover {\n  background-color: #0056b3;\n}"
+  }
+}

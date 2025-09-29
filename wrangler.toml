@@ -1,0 +1,76 @@
+name = "zkode-dev"
+main = "src/worker.js"
+compatibility_date = "2024-12-01"
+account_id = "d6793dc8fdfd65ebf181d36fcf8ced00"
+
+# Development environment (default)
+[[r2_buckets]]
+binding = "TEMPLATES"
+bucket_name = "zkode-templates-dev"
+
+[[r2_buckets]]
+binding = "PROJECTS"
+bucket_name = "zkode-projects-dev"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "zkode-db-dev"
+database_id = "57d1eda0-5b55-4997-aaf7-58f3ab4c7ab8"
+
+[ai]
+binding = "AI"
+
+[vars]
+ENVIRONMENT = "development"
+FRONTEND_URL = "http://localhost:5173"
+API_BASE_URL = "http://localhost:8787"
+
+# Production environment
+[env.production]
+name = "zkode-prod"
+
+[env.production.vars]
+ENVIRONMENT = "production"
+FRONTEND_URL = "https://zkode.app"
+API_BASE_URL = "https://api.zkode.app"
+
+[[env.production.r2_buckets]]
+binding = "TEMPLATES"
+bucket_name = "zkode-templates-prod"
+
+[[env.production.r2_buckets]]
+binding = "PROJECTS"
+bucket_name = "zkode-projects-prod"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "zkode-db-prod"
+database_id = "19b9d6b2-deac-4d62-b818-b9c893161dc1"
+
+[env.production.ai]
+binding = "AI"
+
+# Staging environment
+[env.staging]
+name = "zkode-staging"
+
+[env.staging.vars]
+ENVIRONMENT = "staging"
+FRONTEND_URL = "https://staging.zkode.app"
+API_BASE_URL = "https://staging-api.zkode.app"
+
+[[env.staging.r2_buckets]]
+binding = "TEMPLATES"
+bucket_name = "zkode-templates-staging"
+
+[[env.staging.r2_buckets]]
+binding = "PROJECTS"
+bucket_name = "zkode-projects-staging"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "zkode-db-staging"
+database_id = "cbc9cee7-2f14-4dc0-a695-5bbfaade92dc"
+
+[env.staging.ai]
+binding = "AI"

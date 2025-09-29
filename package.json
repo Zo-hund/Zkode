@@ -1,0 +1,48 @@
+{
+  "name": "zkode",
+  "version": "1.0.0",
+  "description": "AI-powered vibe coding platform",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "dev:local": "node src/local-dev.js",
+    "deploy": "wrangler deploy",
+    "deploy:staging": "wrangler deploy --env staging",
+    "deploy:prod": "wrangler deploy --env production",
+    "build": "npm run build:frontend && npm run build:worker",
+    "build:frontend": "cd frontend && npm run build",
+    "build:frontend:staging": "cd frontend && npm run build:staging",
+    "build:frontend:production": "cd frontend && npm run build:production",
+    "build:worker": "wrangler build",
+    "start:frontend": "cd frontend && npm run dev",
+    "start:local": "concurrently \"npm run dev:local\" \"npm run start:frontend\"",
+    "setup": "npm install && cd frontend && npm install",
+    "setup:cloudflare": "./scripts/setup-production.sh",
+    "templates:upload": "wrangler r2 object put zkode-templates-dev --recursive --local ./templates",
+    "db:migrate": "node scripts/migrate.js",
+    "db:migrate:staging": "node scripts/migrate.js --env=staging",
+    "db:migrate:prod": "node scripts/migrate.js --env=production",
+    "db:seed": "node scripts/seed.js",
+    "db:seed:staging": "node scripts/seed.js --env=staging",
+    "db:seed:prod": "node scripts/seed.js --env=production",
+    "db:setup": "npm run db:migrate && npm run db:seed",
+    "preview": "wrangler deploy --dry-run",
+    "logs": "wrangler tail",
+    "logs:prod": "wrangler tail --env production"
+  },
+  "keywords": [
+    "ai",
+    "coding",
+    "cloudflare",
+    "workers",
+    "react"
+  ],
+  "author": "ZKode",
+  "license": "MIT",
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241212.0",
+    "concurrently": "^9.2.1",
+    "wrangler": "^4.40.2"
+  }
+}
