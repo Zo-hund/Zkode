@@ -1,0 +1,119 @@
+{
+  "pages_project": {
+    "name": "zkode",
+    "production_branch": "main",
+    "build_config": {
+      "build_command": "npm run build:frontend:production",
+      "destination_dir": "frontend/dist",
+      "root_dir": "",
+      "web_analytics_tag": null,
+      "web_analytics_token": null
+    },
+    "source": {
+      "type": "github",
+      "config": {
+        "owner": "marioduerson",
+        "repo_name": "zkode",
+        "production_branch": "main",
+        "pr_comments_enabled": true,
+        "deployments_enabled": true,
+        "production_deployments_enabled": true,
+        "preview_deployment_setting": "custom",
+        "preview_branch_includes": ["staging"],
+        "preview_branch_excludes": []
+      }
+    },
+    "deployment_configs": {
+      "production": {
+        "environment_variables": {
+          "VITE_API_BASE_URL": "https://zkode-prod.marioduerson34.workers.dev",
+          "VITE_ENVIRONMENT": "production",
+          "NODE_VERSION": "18"
+        },
+        "compatibility_date": "2024-12-01",
+        "compatibility_flags": [],
+        "fail_open": true,
+        "always_use_latest_compatibility_date": false,
+        "usage_model": "standard"
+      },
+      "staging": {
+        "environment_variables": {
+          "VITE_API_BASE_URL": "https://zkode-staging.marioduerson34.workers.dev",
+          "VITE_ENVIRONMENT": "staging",
+          "NODE_VERSION": "18"
+        },
+        "compatibility_date": "2024-12-01",
+        "compatibility_flags": [],
+        "fail_open": true,
+        "always_use_latest_compatibility_date": false,
+        "usage_model": "standard"
+      }
+    }
+  },
+  "manual_setup_steps": [
+    {
+      "step": 1,
+      "title": "Create Pages Project",
+      "action": "Go to Cloudflare Dashboard → Pages → Create a project"
+    },
+    {
+      "step": 2,
+      "title": "Connect GitHub",
+      "action": "Click 'Connect to Git' and authorize GitHub access"
+    },
+    {
+      "step": 3,
+      "title": "Select Repository",
+      "action": "Choose the 'zkode' repository from the list"
+    },
+    {
+      "step": 4,
+      "title": "Configure Build",
+      "settings": {
+        "framework_preset": "None",
+        "build_command": "npm run build:frontend:production",
+        "build_output_directory": "frontend/dist",
+        "root_directory": ""
+      }
+    },
+    {
+      "step": 5,
+      "title": "Environment Variables",
+      "variables": [
+        {
+          "name": "VITE_API_BASE_URL",
+          "value": "https://zkode-prod.marioduerson34.workers.dev"
+        },
+        {
+          "name": "VITE_ENVIRONMENT",
+          "value": "production"
+        }
+      ]
+    },
+    {
+      "step": 6,
+      "title": "Deploy",
+      "action": "Click 'Save and Deploy' and wait for first deployment"
+    },
+    {
+      "step": 7,
+      "title": "Setup Staging",
+      "action": "Add staging branch in Settings → Builds & deployments"
+    }
+  ],
+  "expected_urls": {
+    "production": "https://zkode-[random].pages.dev",
+    "staging": "https://staging.zkode-[random].pages.dev",
+    "custom_domain_suggestion": "zkode.app"
+  },
+  "verification_checklist": [
+    "✅ Repository connected and visible in Pages dashboard",
+    "✅ First build completes successfully (2-3 minutes)",
+    "✅ Production URL accessible and loads frontend",
+    "✅ API calls work to production Workers",
+    "✅ User registration and login functional",
+    "✅ AI code generation working",
+    "✅ Staging branch configured with staging variables",
+    "✅ Both environments deploy automatically on push"
+  ]
+}
