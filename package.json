@@ -15,6 +15,7 @@
     "build:frontend:staging": "cd frontend && npm run build:staging",
     "build:frontend:production": "cd frontend && npm run build:production",
     "build:worker": "wrangler build",
+    "pages:build": "cd frontend && npm install && npm run build:production",
     "start:frontend": "cd frontend && npm run dev",
     "start:local": "concurrently \"npm run dev:local\" \"npm run start:frontend\"",
     "setup": "npm install && cd frontend && npm install",
