@@ -797,7 +797,7 @@ function showInfo() {
 This application was created by ZKode using advanced AI technology.
 
 Features included:
-\${${JSON.stringify(features)}.map(f => \`• \${f}\`).join('\\n')}
+\${features.map(f => \`• \${f}\`).join('\\n')}
 
 ZKode transforms your ideas into functional web applications instantly!
   \`;
