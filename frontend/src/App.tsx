@@ -28,6 +28,7 @@ function App() {
   const [showTemplateGallery, setShowTemplateGallery] = useState(false)
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
+  const [previewBlobUrl, setPreviewBlobUrl] = useState<string | null>(null)
   const previewRef = useRef<HTMLIFrameElement>(null)
   const { user, logout } = useAuth()
   const toast = useToast()
@@ -77,6 +78,15 @@ function App() {
   ]
 
   useKeyboardShortcuts(shortcuts)
+
+  // Cleanup blob URL on component unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (previewBlobUrl) {
+        URL.revokeObjectURL(previewBlobUrl)
+      }
+    }
+  }, [previewBlobUrl])
 
   // Track page view on component mount
   useEffect(() => {
@@ -207,9 +217,18 @@ function App() {
         </html>
       `
 
+    // Revoke old blob URL before creating new one to prevent memory leaks
+    if (previewBlobUrl) {
+      URL.revokeObjectURL(previewBlobUrl)
+    }
+
     const blob = new Blob([fullHtml], { type: 'text/html' })
     const url = URL.createObjectURL(blob)
-    previewRef.current.src = url
+    setPreviewBlobUrl(url)
+
+    if (previewRef.current) {
+      previewRef.current.src = url
+    }
   }
 
   const deployProject = async () => {
