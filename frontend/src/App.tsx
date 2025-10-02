@@ -54,6 +54,13 @@ function App() {
     analytics.trackPreferenceChange('framework', 'html', selectedFramework);
   }, [selectedFramework]);
 
+  // Auto-update preview when generated files change
+  useEffect(() => {
+    if (generatedFiles['index.html']) {
+      updatePreview();
+    }
+  }, [generatedFiles]);
+
   const generateCode = async () => {
     if (!prompt.trim()) return
 
