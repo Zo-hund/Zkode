@@ -231,32 +231,41 @@ function App() {
     }
   }
 
-  const deployProject = async () => {
-    if (!generatedFiles || !projectName) return
+  const downloadProject = () => {
+    if (!generatedFiles) {
+      toast.error('No files to download')
+      return
+    }
 
-    // Track deployment attempt
-    analytics.trackFeatureUsage('project_deployment', 'manual');
+    analytics.trackFeatureUsage('project_download', 'manual')
 
     try {
-      const response = await fetch(apiEndpoints.deploy, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ files: generatedFiles, name: projectName })
-      })
+      // Create a bundled HTML file with inline CSS and JS
+      const htmlContent = generatedFiles['index.html'] || ''
+      const cssContent = generatedFiles['style.css'] || ''
+      const jsContent = generatedFiles['script.js'] || ''
 
-      const result = await response.json()
-      if (result.success) {
-        analytics.trackProjectAction('deploy_success', projectName);
-        toast.success('Project deployed successfully! 🚀')
-        window.open(result.url, '_blank')
-      } else {
-        analytics.trackProjectAction('deploy_failed', projectName);
-        toast.error('Deployment failed. Please try again.')
-      }
+      const bundledHtml = htmlContent
+        .replace('</head>', `<style>${cssContent}</style></head>`)
+        .replace('</body>', `<script>${jsContent}</script></body>`)
+
+      // Create blob and trigger download
+      const blob = new Blob([bundledHtml], { type: 'text/html' })
+      const url = URL.createObjectURL(blob)
+      const a = document.createElement('a')
+      a.href = url
+      a.download = `${projectName || 'zkode-project'}.html`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(url)
+
+      toast.success('Project downloaded! 🎉')
+      analytics.trackProjectAction('download_success', projectName || 'unnamed')
     } catch (error) {
-      console.error('Deployment failed:', error)
-      analytics.trackError(error instanceof Error ? error.message : 'Deployment failed', 'deployProject');
-      toast.error('Deployment failed. Please check your connection.')
+      console.error('Download failed:', error)
+      toast.error('Download failed. Please try again.')
+      analytics.trackError(error instanceof Error ? error.message : 'Download failed', 'downloadProject')
     }
   }
 
@@ -283,14 +292,14 @@ function App() {
 
               <button
                 onClick={() => {
-                  analytics.trackButtonClick('deploy_project', 'header');
-                  deployProject();
+                  analytics.trackButtonClick('download_project', 'header');
+                  downloadProject();
                 }}
                 disabled={!generatedFiles['index.html']}
                 className="flex items-center space-x-2 px-4 py-2 bg-green-600 hover:bg-green-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
               >
                 <Download className="w-4 h-4" />
-                <span>Deploy</span>
+                <span>Download</span>
               </button>
 
               {user ? (
