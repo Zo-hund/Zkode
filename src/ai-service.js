@@ -755,10 +755,12 @@ body {
     return `// ZKode Generated JavaScript
 console.log('🎉 ZKode app initialized!');
 
+// Global features array
+const FEATURES = ${JSON.stringify(features)};
+
 // Feature activation system
 function activateFeature(featureIndex) {
-  const features = ${JSON.stringify(features)};
-  const feature = features[featureIndex];
+  const feature = FEATURES[featureIndex];
 
   // Add visual feedback
   const card = document.querySelector(\`[data-feature="\${featureIndex}"]\`);
@@ -797,7 +799,7 @@ function showInfo() {
 This application was created by ZKode using advanced AI technology.
 
 Features included:
-\${features.map(f => \`• \${f}\`).join('\\n')}
+\${FEATURES.map(f => \`• \${f}\`).join('\\n')}
 
 ZKode transforms your ideas into functional web applications instantly!
   \`;
