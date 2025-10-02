@@ -1,9 +1,13 @@
 import { useState, useRef, useEffect } from 'react'
 import { Editor } from '@monaco-editor/react'
-import { Play, Download, Sparkles, Code, Eye, Palette, Settings, Zap, User, LogOut } from 'lucide-react'
+import { Play, Download, Sparkles, Code, Eye, Palette, Settings, Zap, User, LogOut, ChevronLeft, ChevronRight, Layers, Keyboard } from 'lucide-react'
 import { useAuth } from './hooks/useAuth.tsx'
+import { useToast } from './hooks/useToast.tsx'
+import { useKeyboardShortcuts, ShortcutsHelp } from './hooks/useKeyboardShortcuts.tsx'
 import { AuthModal } from './components/Auth/AuthModal'
 import { ErrorBoundary } from './components/ErrorBoundary'
+import { LoadingSpinner } from './components/LoadingSpinner'
+import { TemplateGallery } from './components/TemplateGallery'
 import { apiEndpoints } from './config/env'
 import { analytics } from './utils/analytics'
 
@@ -21,8 +25,58 @@ function App() {
   const [selectedModel, setSelectedModel] = useState('balanced')
   const [selectedFramework, setSelectedFramework] = useState('html')
   const [showAuthModal, setShowAuthModal] = useState(false)
+  const [showTemplateGallery, setShowTemplateGallery] = useState(false)
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const previewRef = useRef<HTMLIFrameElement>(null)
   const { user, logout } = useAuth()
+  const toast = useToast()
+
+  const handleSelectTemplate = (templatePrompt: string, framework: string) => {
+    setPrompt(templatePrompt)
+    setSelectedFramework(framework)
+    toast.info('Template selected! Click Generate to create your project.')
+  }
+
+  // Define keyboard shortcuts
+  const shortcuts = [
+    {
+      key: 'Enter',
+      ctrl: true,
+      callback: () => {
+        if (prompt.trim() && !isGenerating) {
+          generateCode()
+        }
+      },
+      description: 'Generate code'
+    },
+    {
+      key: 'b',
+      ctrl: true,
+      callback: () => setIsSidebarCollapsed(!isSidebarCollapsed),
+      description: 'Toggle sidebar'
+    },
+    {
+      key: 'p',
+      ctrl: true,
+      callback: () => setActiveTab(activeTab === 'editor' ? 'preview' : 'editor'),
+      description: 'Toggle preview'
+    },
+    {
+      key: 't',
+      ctrl: true,
+      callback: () => setShowTemplateGallery(true),
+      description: 'Open templates'
+    },
+    {
+      key: '/',
+      ctrl: true,
+      callback: () => setShowShortcutsHelp(true),
+      description: 'Show shortcuts'
+    }
+  ]
+
+  useKeyboardShortcuts(shortcuts)
 
   // Track page view on component mount
   useEffect(() => {
@@ -94,6 +148,9 @@ function App() {
           // Track successful generation
           analytics.trackAIGenerationResult(true, duration);
           analytics.trackFeatureUsage('ai_code_generation', `${selectedFramework}_${selectedModel}`);
+
+          // Show success toast
+          toast.success('Code generated successfully! 🎉')
         } catch (parseError) {
           setGeneratedFiles({
             'index.html': result.response
@@ -101,10 +158,12 @@ function App() {
 
           // Track partial success
           analytics.trackAIGenerationResult(true, duration);
+          toast.success('Code generated successfully!')
         }
       } else {
         // Track generation failure
         analytics.trackAIGenerationResult(false, duration, 'No response received');
+        toast.error('No response received from AI. Please try again.')
       }
     } catch (error) {
       console.error('Generation failed:', error)
@@ -113,6 +172,9 @@ function App() {
       // Track generation error
       analytics.trackAIGenerationResult(false, duration, error instanceof Error ? error.message : 'Unknown error');
       analytics.trackError(error instanceof Error ? error.message : 'Generation failed', 'generateCode');
+
+      // Show error toast
+      toast.error(error instanceof Error ? error.message : 'Failed to generate code. Please try again.')
     }
     setIsGenerating(false)
   }
@@ -166,13 +228,16 @@ function App() {
       const result = await response.json()
       if (result.success) {
         analytics.trackProjectAction('deploy_success', projectName);
+        toast.success('Project deployed successfully! 🚀')
         window.open(result.url, '_blank')
       } else {
         analytics.trackProjectAction('deploy_failed', projectName);
+        toast.error('Deployment failed. Please try again.')
       }
     } catch (error) {
       console.error('Deployment failed:', error)
       analytics.trackError(error instanceof Error ? error.message : 'Deployment failed', 'deployProject');
+      toast.error('Deployment failed. Please check your connection.')
     }
   }
 
@@ -189,6 +254,14 @@ function App() {
               <span className="text-gray-400 text-sm">AI Vibe Coding</span>
             </div>
             <div className="flex items-center space-x-3">
+              <button
+                onClick={() => setShowShortcutsHelp(true)}
+                className="flex items-center space-x-2 px-3 py-2 text-gray-300 hover:text-white hover:bg-dark-800 rounded-lg transition-colors"
+                title="Keyboard shortcuts (Ctrl+/)"
+              >
+                <Keyboard className="w-4 h-4" />
+              </button>
+
               <button
                 onClick={() => {
                   analytics.trackButtonClick('deploy_project', 'header');
@@ -235,14 +308,26 @@ function App() {
         </div>
       </header>
 
-      <div className="flex h-[calc(100vh-80px)]">
+      <div className="flex h-[calc(100vh-80px)] relative">
         {/* Sidebar */}
-        <div className="w-80 bg-dark-900 border-r border-dark-800 flex flex-col">
+        <div className={`bg-dark-900 border-r border-dark-800 flex flex-col transition-all duration-300 ${
+          isSidebarCollapsed ? 'w-0 opacity-0' : 'w-80 opacity-100'
+        }`}>
           <div className="p-4 border-b border-dark-800">
-            <h2 className="font-semibold mb-3 flex items-center">
-              <Sparkles className="w-4 h-4 mr-2 text-yellow-400" />
-              Describe Your Vibe
-            </h2>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="font-semibold flex items-center">
+                <Sparkles className="w-4 h-4 mr-2 text-yellow-400" />
+                Describe Your Vibe
+              </h2>
+              <button
+                onClick={() => setShowTemplateGallery(true)}
+                className="flex items-center gap-1 px-2 py-1 text-xs bg-purple-600/20 text-purple-400 hover:bg-purple-600 hover:text-white rounded-md transition-colors"
+                title="Browse templates"
+              >
+                <Layers className="w-3 h-3" />
+                Templates
+              </button>
+            </div>
             <textarea
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
@@ -287,10 +372,10 @@ function App() {
             <button
               onClick={generateCode}
               disabled={isGenerating || !prompt.trim()}
-              className="w-full mt-4 flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-colors"
+              className="w-full mt-4 flex items-center justify-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98]"
             >
               {isGenerating ? (
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <LoadingSpinner size="sm" />
               ) : (
                 <Play className="w-4 h-4" />
               )}
@@ -327,6 +412,23 @@ function App() {
             </div>
           )}
         </div>
+
+        {/* Sidebar Toggle Button */}
+        <button
+          onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          className="absolute left-0 top-4 z-20 bg-dark-800 hover:bg-dark-700 p-2 rounded-r-lg border border-l-0 border-dark-700 transition-all duration-300 transform hover:scale-110"
+          style={{
+            left: isSidebarCollapsed ? '0' : '20rem',
+            transition: 'left 0.3s ease-in-out'
+          }}
+          title={isSidebarCollapsed ? 'Show sidebar' : 'Hide sidebar'}
+        >
+          {isSidebarCollapsed ? (
+            <ChevronRight className="w-4 h-4 text-gray-400" />
+          ) : (
+            <ChevronLeft className="w-4 h-4 text-gray-400" />
+          )}
+        </button>
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col">
@@ -426,6 +528,21 @@ function App() {
           analytics.trackButtonClick('close_auth_modal', 'modal');
           setShowAuthModal(false);
         }}
+      />
+
+      {/* Template Gallery */}
+      {showTemplateGallery && (
+        <TemplateGallery
+          onSelectTemplate={handleSelectTemplate}
+          onClose={() => setShowTemplateGallery(false)}
+        />
+      )}
+
+      {/* Keyboard Shortcuts Help */}
+      <ShortcutsHelp
+        shortcuts={shortcuts}
+        isOpen={showShortcutsHelp}
+        onClose={() => setShowShortcutsHelp(false)}
       />
       </div>
     </ErrorBoundary>
