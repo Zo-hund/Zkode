@@ -1,11 +1,10 @@
 import { useState, useRef, useEffect } from 'react'
 import { Editor } from '@monaco-editor/react'
 import { 
-  Play, Download, Sparkles, Code, Eye, Palette, Settings, Zap, 
+  Play, Download, Sparkles, Code, Eye, Settings, Zap, 
   User, LogOut, ChevronLeft, ChevronRight, Layers, Keyboard,
-  Monitor, Smartphone, Tablet, Maximize, Minimize, RefreshCw,
-  Star, Heart, Share2, Copy, CheckCircle, AlertCircle,
-  Cpu, Wand2, Rocket, Globe, GitBranch
+  Monitor, Smartphone, Tablet, Maximize, Minimize,
+  CheckCircle, Cpu, Wand2, Rocket, Globe, GitBranch
 } from 'lucide-react'
 import { useAuth } from './hooks/useAuth.tsx'
 import { useToast } from './hooks/useToast.tsx'
