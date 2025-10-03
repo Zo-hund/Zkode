@@ -28,8 +28,21 @@ export default defineConfig({
 
   // Development server
   server: {
-    port: 3001,
-    host: '0.0.0.0'
+    port: 3004,
+    host: '0.0.0.0',
+    allowedHosts: [
+      'localhost',
+      '127.0.0.1',
+      '0.0.0.0',
+      '.e2b.dev',
+      /^.*\.e2b\.dev$/,
+      /^.*-.*\.e2b\.dev$/
+    ],
+    cors: true,
+    hmr: {
+      port: 24678,
+      host: 'localhost'
+    }
   },
 
   // Preview server (for production builds)
