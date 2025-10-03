@@ -28,10 +28,8 @@ export default defineConfig({
 
   // Development server
   server: {
-    port: 5173,
-    strictPort: true,
-    host: true,
-    allowedHosts: 'all'
+    port: 3001,
+    host: '0.0.0.0'
   },
 
   // Preview server (for production builds)
